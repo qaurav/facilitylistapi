@@ -3,6 +3,7 @@ const app = express();
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const multer = require('multer');
+const path = require('path');
 
 ///routes
 
@@ -24,16 +25,19 @@ mongoose.connect(process.env.url)
 //middleware
 const storage = multer.diskStorage({
    destination:(req, file, callback) =>{
-       callback(null,'uploads')
+       callback(null, path.join(path.dirname(__dirname), 'uploads'));
    },
    filename:(req, file, callback) => {
-    callback(null,"def.ico");
+        callback(null, file.originalname);
    },
 });
 
 const upload = multer({storage:storage});
-app.post('/uploads',upload.single('file'), (req,res) => {
-    res.status(200).json('File has been uploaded');
+app.post('/uploads',upload.single("file"), (req,res) => {
+    res.status(200).json({
+        status:'ok',
+        message:'Icon uploaded',
+    });
 })
 
 
